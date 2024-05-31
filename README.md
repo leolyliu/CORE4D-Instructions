@@ -32,12 +32,25 @@ Please refer to ```docs/file_definitions.md``` for details of our dataset.
 
 ## Data Visualization
 
-[1] Environment setup:
+[1] Environment setup
 
-[2] Download SMPLX models from xxx
+[2] Visualize human-object motions
 
-[3] Visualize human-object motions
+```x
+cd dataset_utils
+python visualize_human_object_motion.py --dataset_root <dataset root directory> --object_model_root <object model root directory> --sequence_name <sequence name> --save_path <path to save the visualization result> --device <device for the rendering process>
+```
+
+For example, if you select the following data sequence:
+
+```x
+python visualize_human_object_motion.py --dataset_root <dataset root directory> --object_model_root <object model root directory> --sequence_name "20231002/004" --save_path "./example.gif" --device "cuda:0"
+```
+
+You can obtain the following visualization result:
+
+<img src="https://raw.githubusercontent.com/leolyliu/CORE4D-Instructions/main/assets/example.gif" width="1920"/>
 
 ## Email
 
-If you have any questions, please contact ```yun-liu22@mails.tsinghua.edu.cn```.
+If you have any questions, please feel free to contact ```yun-liu22@mails.tsinghua.edu.cn```.
