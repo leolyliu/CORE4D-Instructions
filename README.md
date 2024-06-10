@@ -18,7 +18,6 @@ The data is organized as follows:
     |--human_object_motions
     |--allocentric_RGBD_videos
     |--egocentric_RGB_videos
-    |--scenes
     |--camera_parameters
     |--action_labels.json
 |--CORE4D_Synthetic
@@ -33,6 +32,19 @@ Please refer to ```docs/file_definitions.md``` for details of our dataset.
 ## Data Visualization
 
 [1] Environment setup
+
+Our code is tested on Ubuntu 20.04 with one NVIDIA GeForce RTX 3090 GPU. The Driver version is 535.129.03. The CUDA version is 12.2.
+
+Please use the following command to set up the environment:
+
+```x
+conda create -n core4d python=3.9
+conda activate core4d
+<install PyTorch >= 1.7.1>
+<install PyTorch3D >= 0.6.1>
+cd dataset_utils
+pip install -r requirements.txt
+```
 
 [2] Visualize human-object motions
 
