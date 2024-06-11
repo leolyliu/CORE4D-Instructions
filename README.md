@@ -18,6 +18,7 @@ The data is organized as follows:
     |--human_object_motions
     |--allocentric_RGBD_videos
     |--egocentric_RGB_videos
+    |--human_object_segmentations
     |--camera_parameters
     |--action_labels.json
 |--CORE4D_Synthetic
