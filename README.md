@@ -70,7 +70,7 @@ You can obtain the following visualization result:
 
 ## License
 
-This work is licensed under a [CC BY-NC 4.0 license](https://creativecommons.org/licenses/by-nc/4.0/).
+This work is licensed under a [CC BY 4.0 license](https://creativecommons.org/licenses/by/4.0/).
 
 ## Email
 
