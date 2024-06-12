@@ -1,0 +1,1 @@
+python trainer_hand_foot_manip_diffusion_hho.py --window=120 --batch_size=32 --project="./omomo_runs" --exp_name="hho_stage2_manip_set1" --run_whole_pipeline --checkpoint=<stage1_checkpoint_path> --fullbody_checkpoint=<stage2_checkpoint_path>

@@ -2,11 +2,7 @@
 
 Official repository of "CORE4D: A 4D Human-Object-Human Interaction Dataset for Collaborative Object REarrangement".
 
-### 📁[Dataset Homepage](https://core4d.github.io/)
-
-
-### 📁[Dataset](https://1drv.ms/f/s!Ap-t7dLl7BFUmHl9Une1E6FLsS4J?e=RLt0Fk)
-
+### :page_with_curl:[arxiv](https://arxiv.org/pdf/2406.19353) | :house:[Dataset Homepage](https://core4d.github.io/) | :file_folder:[Dataset](https://1drv.ms/f/s!Ap-t7dLl7BFUmHl9Une1E6FLsS4J?e=RLt0Fk)
 
 #### Authors
 
@@ -19,15 +15,28 @@ The data is organized as follows:
 ```
 |--CORE4D_Real
     |--object_models
+        ...
     |--human_object_motions
+        ...
     |--allocentric_RGBD_videos
+        ...
     |--egocentric_RGB_videos
+        ...
     |--human_object_segmentations
+        ...
     |--camera_parameters
+        ...
     |--action_labels.json
 |--CORE4D_Synthetic
-    |--object_models
-    |--human_object_motions
+    |-- <motion sequence name 1>
+        |-- human_poses.npy
+        |-- object_mesh.obj
+        |-- object_poses.npy
+    |-- <motion sequence name 2>
+        |-- human_poses.npy
+        |-- object_mesh.obj
+        |-- object_poses.npy
+    ...
 ```
 
 ## File Definitions
@@ -68,10 +77,29 @@ You can obtain the following visualization result:
 
 <img src="https://raw.githubusercontent.com/leolyliu/CORE4D-Instructions/main/assets/example.gif" width="1920"/>
 
+## Benchmark Codes
+
+For the implementation of the benchmark "human-object motion forecasting", please refer to ```./benchmarks/motion_forecasting/README.md```.
+
+For the implementation of the benchmark "interaction synthesis", please refer to ```./benchmarks/interaction_synthesis/README.md```.
+
 ## License
 
-This work is licensed under a [CC BY-NC 4.0 license](https://creativecommons.org/licenses/by-nc/4.0/).
+This work is licensed under a [CC BY 4.0 license](https://creativecommons.org/licenses/by/4.0/).
 
 ## Email
 
 If you have any questions, please feel free to contact ``yun-liu22@mails.tsinghua.edu.cn``.
+
+## Citation
+
+If you fine our work helpful, please cite:
+
+```x
+@article{zhang2024core4d,
+  title={CORE4D: A 4D Human-Object-Human Interaction Dataset for Collaborative Object REarrangement},
+  author={Zhang, Chengwen and Liu, Yun and Xing, Ruofan and Tang, Bingda and Yi, Li},
+  journal={arXiv preprint arXiv:2406.19353},
+  year={2024}
+}
+```

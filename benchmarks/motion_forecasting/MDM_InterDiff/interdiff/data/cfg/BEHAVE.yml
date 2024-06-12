@@ -1,0 +1,15 @@
+# SMPL
+# MOTION_PATH: ./data/behave/sequences # path where motion sequences (30fps) are stored
+# OBJECT_TEMPLATE: ./data/behave/objects # path where object templates are stored
+# SPLIT_PATH: ./data/behave/split.json # path where processed BEHAVE is stored for training BEHAVE network
+# MODEL_PATH: # path where smplh models are stored
+
+# MOTION_PATH: /share/datasets/BEHAVE/behave-30fps-params-v1
+# OBJECT_TEMPLATE: /share/datasets/BEHAVE/objects
+# SPLIT_PATH: /share/datasets/BEHAVE/split.json
+# MODEL_PATH: /share/human_model/smplh
+
+MOTION_PATH: /data3/datasets/BEHAVE/behave/sequences
+OBJECT_TEMPLATE: /data3/datasets/BEHAVE/behave/objects
+SPLIT_PATH: /data3/datasets/BEHAVE/behave/split.json
+MODEL_PATH: /share/human_model/smplh

@@ -35,12 +35,7 @@ The data is organized as follows:
                     |-- config.json
                     |-- intrinsic.json
                     |-- timestamp.txt
-                    |-- <color>
-                        |-- <frame id>.jpg
-                        ...
-                    |-- <depth>
-                        |-- <frame id>.png
-                        ...
+                    |-- color.mp4
                 |-- <camera view 2>
                 ...
             |-- <sequence 2>
@@ -50,13 +45,13 @@ The data is organized as follows:
             ...
         ...
     |--egocentric_RGB_videos
-        |-- <video>
-            |-- video1.mp4
-            |-- video2.mp4
+        |-- video
+            |-- <video 1>.mp4
+            |-- <video 2>.mp4
             ...
-        |-- <audio>
-            |-- audio1.mp3 # provide timestamp
-            |-- audio2.mp3
+        |-- audio
+            |-- <audio 1>.mp3 # provide timestamp
+            |-- <audio 2>.mp3
             ...
             
     |--human_object_segmentations
@@ -83,26 +78,13 @@ The data is organized as follows:
         ...
     |--action_labels.json
 |--CORE4D_Synthetic
-    |--object_models
-        |-- <object category 1>
-            |-- <object name 1>_m.obj
-            |-- <object name 2>_m.obj
-            ...
-        |-- <object category 2>
-            ...
+    |-- <motion sequence 1>
+        |-- human_poses.npy
+        |-- object_mesh.obj
+        |-- object_poses.npy
+    |-- <motion sequence 2>
         ...
-    |--human_object_motions
-        |-- <date 1>
-            |-- <sequence 1>
-                |-- object_poses_<object name>.npy
-                |-- person_poses.npz
-                |-- object_mesh.obj
-            |-- <sequence 2>
-                ...
-            ...
-        |-- <date 2>
-            ...
-        ...
+    ...
 ```
 
 ## Object Models
@@ -129,7 +111,6 @@ After that, the ```human_motion``` comprises the following information:
 * ```right_hand_pose```: An ```numpy.float32``` array with shape (N_frame, 12), denotes the human's right hand pose in each frame. The hand pose is defined in PCA space with 12 DoF.
 * ```joints```: An ```numpy.float32``` array with shape (N_frame, 127, 3), denotes the human's SMPLX joint positions in each frame.
 * ```vertices```: An ```numpy.float32``` array with shape (N_frame, 10475, 3), denotes the human's SMPLX vertex positions in each frame.
-* ```faces```: An ```numpy.float32``` array with shape (20908, 3), denotes the faces of the SMPLX model.
 
 To feed ```betas```, ```global_orient```, ```transl```, ```body_pose```, ```left_hand_pose```, and ```right_hand_pose``` into the SMPLX model. Please first download [SMPLX models](https://smpl-x.is.tue.mpg.de/index.html), and then use the following python codes in the ```dataset_utils``` folder:
 
