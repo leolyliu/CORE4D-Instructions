@@ -1,4 +1,4 @@
-# Definitions of CORE4D Data File
+****# Definitions of CORE4D Data File
 
 ## Data Organization
 
@@ -20,19 +20,28 @@ The data is organized as follows:
                 |-- object_poses_<object name>.npy
                 |-- person1_poses.npz
                 |-- person2_poses.npz
+                |-- object_metadata.json
+                |-- aligned_frame_ids.txt
             |-- <sequence 2>
                 ...
             ...
-        |-- <date 2>
+        |-- <date 2>****
             ...
         ...
     |--allocentric_RGBD_videos
         |-- <date 1>
             |-- <sequence 1>
-                |-- <camera view 1>_color.mp4
-                |-- <camera view 1>_depth.avi
-                |-- <camera view 2>_color.mp4
-                |-- <camera view 2>_depth.avi
+                |-- <camera view 1>
+                    |-- config.json
+                    |-- intrinsic.json
+                    |-- timestamp.txt
+                    |-- <color>
+                        |-- <frame id>.jpg
+                        ...
+                    |-- <depth>
+                        |-- <frame id>.png
+                        ...
+                |-- <camera view 2>
                 ...
             |-- <sequence 2>
                 ...
@@ -41,15 +50,15 @@ The data is organized as follows:
             ...
         ...
     |--egocentric_RGB_videos
-        |-- <date 1>
-            |-- <sequence 1>
-                egocentric_color.mp4
-            |-- <sequence 2>
-                ...
+        |-- <video>
+            |-- video1.mp4
+            |-- video2.mp4
             ...
-        |-- <date 2>
+        |-- <audio>
+            |-- audio1.mp3 # provide timestamp
+            |-- audio2.mp3
             ...
-        ...
+            
     |--human_object_segmentations
         |-- <date 1>
             |-- <sequence 1>
@@ -64,11 +73,11 @@ The data is organized as follows:
         ...
     |--camera_parameters
         |-- <date 1>
-            |-- <camera view 1>_intrinsic.json
             |-- <camera view 1>_extrinsic.txt
-            |-- <camera view 2>_intrinsic.json
             |-- <camera view 2>_extrinsic.txt
             ...
+            |-- <ego camera view>_intrinsics.txt
+            |-- <ego camera view>_extrinsics.txt
         |-- <date 2>
             ...
         ...
@@ -86,8 +95,8 @@ The data is organized as follows:
         |-- <date 1>
             |-- <sequence 1>
                 |-- object_poses_<object name>.npy
-                |-- person1_poses.npz
-                |-- person2_poses.npz
+                |-- person_poses.npz
+                |-- object_mesh.obj
             |-- <sequence 2>
                 ...
             ...
