@@ -1,0 +1,1 @@
+python trainer_single_stage_hho.py --window=120 --batch_size=32 --project="./omomo_runs" --exp_name="hho_singlestage" --wandb_pj_name="omomo_release_singlestage_hho" --entity=<your_entity>
