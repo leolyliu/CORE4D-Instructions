@@ -63,6 +63,12 @@ You can obtain the following visualization result:
 
 <img src="https://raw.githubusercontent.com/leolyliu/CORE4D-Instructions/main/assets/example.gif" width="1920"/>
 
+## Benchmark Codes
+
+For the implementation of the benchmark "human-object motion forecasting", please refer to ```./benchmarks/motion_forecasting/README.md```.
+
+For the implementation of the benchmark "interaction synthesis", please refer to ```./benchmarks/interaction_synthesis/README.md```.
+
 ## Email
 
 If you have any questions, please feel free to contact ```yun-liu22@mails.tsinghua.edu.cn```.
