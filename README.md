@@ -1,8 +1,12 @@
-# :sparkles: CORE4D: A 4D Human-Object-Human Interaction Dataset for Collaborative Object REarrangement :sparkles:
+# ✨ CORE4D: A 4D Human-Object-Human Interaction Dataset for Collaborative Object REarrangement ✨
 
 Official repository of "CORE4D: A 4D Human-Object-Human Interaction Dataset for Collaborative Object REarrangement".
 
-### :file_folder:[Dataset](https://1drv.ms/f/s!Ap-t7dLl7BFUmHl9Une1E6FLsS4J?e=RLt0Fk)
+### 📁[Dataset Homepage](https://core4d.github.io/)
+
+
+### 📁[Dataset](https://1drv.ms/f/s!Ap-t7dLl7BFUmHl9Une1E6FLsS4J?e=RLt0Fk)
+
 
 #### Authors
 
@@ -18,6 +22,7 @@ The data is organized as follows:
     |--human_object_motions
     |--allocentric_RGBD_videos
     |--egocentric_RGB_videos
+    |--human_object_segmentations
     |--camera_parameters
     |--action_labels.json
 |--CORE4D_Synthetic
@@ -27,7 +32,7 @@ The data is organized as follows:
 
 ## File Definitions
 
-Please refer to ```docs/file_definitions.md``` for details of our dataset.
+Please refer to ``docs/file_definitions.md`` for details of our dataset.
 
 ## Data Visualization
 
@@ -69,6 +74,10 @@ For the implementation of the benchmark "human-object motion forecasting", pleas
 
 For the implementation of the benchmark "interaction synthesis", please refer to ```./benchmarks/interaction_synthesis/README.md```.
 
+## License
+
+This work is licensed under a [CC BY 4.0 license](https://creativecommons.org/licenses/by/4.0/).
+
 ## Email
 
-If you have any questions, please feel free to contact ```yun-liu22@mails.tsinghua.edu.cn```.
+If you have any questions, please feel free to contact ``yun-liu22@mails.tsinghua.edu.cn``.
