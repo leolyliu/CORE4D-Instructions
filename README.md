@@ -2,11 +2,7 @@
 
 Official repository of "CORE4D: A 4D Human-Object-Human Interaction Dataset for Collaborative Object REarrangement".
 
-### 📁[Dataset Homepage](https://core4d.github.io/)
-
-
-### 📁[Dataset](https://1drv.ms/f/s!Ap-t7dLl7BFUmHl9Une1E6FLsS4J?e=RLt0Fk)
-
+### :page_with_curl:[arxiv](https://arxiv.org/pdf/2406.19353) | :house:[Dataset Homepage](https://core4d.github.io/) | :file_folder:[Dataset](https://1drv.ms/f/s!Ap-t7dLl7BFUmHl9Une1E6FLsS4J?e=RLt0Fk)
 
 #### Authors
 
