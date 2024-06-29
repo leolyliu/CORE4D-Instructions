@@ -76,8 +76,8 @@ The data is organized as follows:
             |-- <camera view 1>_extrinsic.txt
             |-- <camera view 2>_extrinsic.txt
             ...
-            |-- <ego camera view>_intrinsics.txt
-            |-- <ego camera view>_extrinsics.txt
+            |-- <ego camera view>_intrinsic.txt
+            |-- <ego camera view>_extrinsic.txt
         |-- <date 2>
             ...
         ...
