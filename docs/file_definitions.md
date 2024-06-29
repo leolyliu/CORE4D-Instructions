@@ -129,7 +129,6 @@ After that, the ```human_motion``` comprises the following information:
 * ```right_hand_pose```: An ```numpy.float32``` array with shape (N_frame, 12), denotes the human's right hand pose in each frame. The hand pose is defined in PCA space with 12 DoF.
 * ```joints```: An ```numpy.float32``` array with shape (N_frame, 127, 3), denotes the human's SMPLX joint positions in each frame.
 * ```vertices```: An ```numpy.float32``` array with shape (N_frame, 10475, 3), denotes the human's SMPLX vertex positions in each frame.
-* ```faces```: An ```numpy.float32``` array with shape (20908, 3), denotes the faces of the SMPLX model.
 
 To feed ```betas```, ```global_orient```, ```transl```, ```body_pose```, ```left_hand_pose```, and ```right_hand_pose``` into the SMPLX model. Please first download [SMPLX models](https://smpl-x.is.tue.mpg.de/index.html), and then use the following python codes in the ```dataset_utils``` folder:
 
