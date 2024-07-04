@@ -15,13 +15,28 @@ The data is organized as follows:
 ```
 |--CORE4D_Real
     |--object_models
+        ...
     |--human_object_motions
+        ...
     |--allocentric_RGBD_videos
+        ...
     |--egocentric_RGB_videos
+        ...
     |--human_object_segmentations
+        ...
     |--camera_parameters
+        ...
     |--action_labels.json
 |--CORE4D_Synthetic
+    |-- <motion sequence name 1>
+        |-- human_poses.npy
+        |-- object_mesh.obj
+        |-- object_poses.npy
+    |-- <motion sequence name 2>
+        |-- human_poses.npy
+        |-- object_mesh.obj
+        |-- object_poses.npy
+    ...
 ```
 
 ## File Definitions
