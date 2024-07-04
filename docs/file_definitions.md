@@ -17,7 +17,7 @@ The data is organized as follows:
     |--human_object_motions
         |-- <date 1>
             |-- <sequence 1>
-                |-- object_poses_<object name>.npy
+                |-- smooth_objposes.npy
                 |-- person1_poses.npz
                 |-- person2_poses.npz
                 |-- object_metadata.json
@@ -35,12 +35,7 @@ The data is organized as follows:
                     |-- config.json
                     |-- intrinsic.json
                     |-- timestamp.txt
-                    |-- <color>
-                        |-- <frame id>.jpg
-                        ...
-                    |-- <depth>
-                        |-- <frame id>.png
-                        ...
+                    |-- color.mp4
                 |-- <camera view 2>
                 ...
             |-- <sequence 2>
@@ -50,20 +45,20 @@ The data is organized as follows:
             ...
         ...
     |--egocentric_RGB_videos
-        |-- <video>
-            |-- video1.mp4
-            |-- video2.mp4
+        |-- video
+            |-- <video 1>.mp4
+            |-- <video 2>.mp4
             ...
-        |-- <audio>
-            |-- audio1.mp3 # provide timestamp
-            |-- audio2.mp3
+        |-- audio
+            |-- <audio 1>.mp3 # provide timestamp
+            |-- <audio 2>.mp3
             ...
             
     |--human_object_segmentations
         |-- <date 1>
             |-- <sequence 1>
-                |-- <camera view 1>_mask.npy
-                |-- <camera view 2>_mask.npy
+                |-- <camera view 1>_mask.npz
+                |-- <camera view 2>_mask.npz
                 ...
             |-- <sequence 2>
                 ...
@@ -73,36 +68,26 @@ The data is organized as follows:
         ...
     |--camera_parameters
         |-- <date 1>
+            |-- <camera view 1>_intrinsic.txt
+            |-- <camera view 2>_intrinsic.txt
+            ...
             |-- <camera view 1>_extrinsic.txt
             |-- <camera view 2>_extrinsic.txt
             ...
-            |-- <ego camera view>_intrinsic.txt
-            |-- <ego camera view>_extrinsic.txt
+            |-- ego_intrinsic.txt
+            |-- ego_extrinsic.txt
         |-- <date 2>
             ...
         ...
     |--action_labels.json
 |--CORE4D_Synthetic
-    |--object_models
-        |-- <object category 1>
-            |-- <object name 1>_m.obj
-            |-- <object name 2>_m.obj
-            ...
-        |-- <object category 2>
-            ...
+    |-- <motion sequence 1>
+        |-- human_poses.npy
+        |-- object_mesh.obj
+        |-- object_poses.npy
+    |-- <motion sequence 2>
         ...
-    |--human_object_motions
-        |-- <date 1>
-            |-- <sequence 1>
-                |-- object_poses_<object name>.npy
-                |-- person_poses.npz
-                |-- object_mesh.obj
-            |-- <sequence 2>
-                ...
-            ...
-        |-- <date 2>
-            ...
-        ...
+    ...
 ```
 
 ## Object Models
