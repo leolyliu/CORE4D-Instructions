@@ -1,4 +1,4 @@
-****# Definitions of CORE4D Data File
+# Definitions of CORE4D Data File
 
 ## Data Organization
 
