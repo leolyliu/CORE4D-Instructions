@@ -22,8 +22,6 @@ The data is organized as follows:
     |--camera_parameters
     |--action_labels.json
 |--CORE4D_Synthetic
-    |--object_models
-    |--human_object_motions
 ```
 
 ## File Definitions
