@@ -90,3 +90,16 @@ This work is licensed under a [CC BY 4.0 license](https://creativecommons.org/li
 ## Email
 
 If you have any questions, please feel free to contact ``yun-liu22@mails.tsinghua.edu.cn``.
+
+## Citation
+
+If you fine our work helpful, please cite:
+
+```x
+@article{zhang2024core4d,
+  title={CORE4D: A 4D Human-Object-Human Interaction Dataset for Collaborative Object REarrangement},
+  author={Zhang, Chengwen and Liu, Yun and Xing, Ruofan and Tang, Bingda and Yi, Li},
+  journal={arXiv preprint arXiv:2406.19353},
+  year={2024}
+}
+```
