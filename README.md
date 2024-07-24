@@ -60,17 +60,19 @@ cd dataset_utils
 pip install -r requirements.txt
 ```
 
+Then, install smplx from [smplx](https://github.com/vchoutas/smplx), and download [SMPL-X models](https://smpl-x.is.tue.mpg.de/index.html).
+
 [2] Visualize human-object motions
 
 ```x
 cd dataset_utils
-python visualize_human_object_motion.py --dataset_root <dataset root directory> --object_model_root <object model root directory> --sequence_name <sequence name> --save_path <path to save the visualization result> --device <device for the rendering process>
+python visualize_human_object_motion.py --dataset_root <dataset root directory> --object_model_root <object model root directory> --smplx_model_dir <SMPL-X model directory> --sequence_name <sequence name> --save_path <path to save the visualization result> --device <device for the rendering process>
 ```
 
 For example, if you select the following data sequence:
 
 ```x
-python visualize_human_object_motion.py --dataset_root <dataset root directory> --object_model_root <object model root directory> --sequence_name "20231002/004" --save_path "./example.gif" --device "cuda:0"
+python visualize_human_object_motion.py --dataset_root <dataset root directory> --object_model_root <object model root directory> --smplx_model_dir <SMPL-X model directory> --sequence_name "20231002/004" --save_path "./example.gif" --device "cuda:0"
 ```
 
 You can obtain the following visualization result:
