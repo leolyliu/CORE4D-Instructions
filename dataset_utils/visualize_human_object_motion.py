@@ -7,6 +7,7 @@ import torch
 import trimesh
 from smplx import smplx
 import cv2
+import json
 import imageio
 from pytorch3d.renderer import PointLights
 from pyt3d_wrapper import Pyt3DWrapper
@@ -29,7 +30,7 @@ CAMERA_TO_WORLD = np.float32([
 EXTRINSIC = np.linalg.inv(CAMERA_TO_WORLD)
 
 
-def visualize(obj_mesh, obj_poses, person1_smplx_data, person2_smplx_data, save_path=None, sampling_rate=1, device="cuda:0"):
+def visualize(obj_mesh, obj_poses, person1_smplx_data, person2_smplx_data, human_mesh_faces=None, save_path=None, sampling_rate=1, device="cuda:0"):
     N = obj_poses.shape[0]
     
     obj_pts = obj_mesh.vertices
@@ -49,8 +50,8 @@ def visualize(obj_mesh, obj_poses, person1_smplx_data, person2_smplx_data, save_
         
         # construct object meshes in this frame
         obj_posed_mesh = trimesh.Trimesh(vertices=(obj_pts.copy() @ obj_pose[:3, :3].T) + obj_pose[:3, 3], faces=obj_faces.copy())
-        person1_mesh = trimesh.Trimesh(vertices=person1_smplx_data["vertices"][frame_idx], faces=person1_smplx_data["faces"])
-        person2_mesh = trimesh.Trimesh(vertices=person2_smplx_data["vertices"][frame_idx], faces=person2_smplx_data["faces"])
+        person1_mesh = trimesh.Trimesh(vertices=person1_smplx_data["vertices"][frame_idx], faces=human_mesh_faces)
+        person2_mesh = trimesh.Trimesh(vertices=person2_smplx_data["vertices"][frame_idx], faces=human_mesh_faces)
         meshes = [person1_mesh, person2_mesh, obj_posed_mesh]
         
         # render
@@ -67,6 +68,7 @@ def visualize(obj_mesh, obj_poses, person1_smplx_data, person2_smplx_data, save_
 def process(args):
     dataset_root = args.dataset_root
     object_model_root = args.object_model_root
+    smplx_model_dir = args.smplx_model_dir
     sequence_name = args.sequence_name
     save_path = args.save_path
     device = args.device
@@ -74,24 +76,27 @@ def process(args):
     motion_dir = join(dataset_root, "human_object_motions", sequence_name)
     
     # get object name and category
-    obj_name = None
-    for fn in os.listdir(motion_dir):
-        if fn.startswith("object_"):
-            obj_name = fn.split(".")[0].split("_")[2]
-    assert not obj_name is None
+    assert isfile(join(motion_dir, "object_metadata.json"))
+    obj_metadata = json.load(open(join(motion_dir, "object_metadata.json"), "r"))
+    obj_name = obj_metadata["obj_name"]
     category = obj_name[:-3]
     
     # load object model and poses
     obj_mesh = trimesh.load(join(object_model_root, category, obj_name + "_m.obj"))  # unit: m
     obj_mesh = simplify_mesh(obj_mesh, scale=20)
-    obj_poses = np.load(join(motion_dir, "object_poses_{}.npy".format(obj_name)))
+    obj_poses = np.load(join(motion_dir, "smooth_objposes.npy".format(obj_name)))
     
     # load human SMPLX data
     person1_smplx_data = np.load(join(motion_dir, "person1_poses.npz"), allow_pickle=True)["arr_0"].item()
     person2_smplx_data = np.load(join(motion_dir, "person2_poses.npz"), allow_pickle=True)["arr_0"].item()
     
+    # load human mesh faces
+    smplx_model = smplx.create(smplx_model_dir, model_type="smplx", gender="neutral", batch_size=1, use_face_contour=False, num_betas=10, num_expression_coeffs=10, ext="npz", use_pca=True, num_pca_comps=12, flat_hand_mean=True)
+    smplx_model.to(device)
+    human_mesh_faces = smplx_model.faces_tensor.detach().cpu().numpy()  # (20908, 3)
+    
     # visualize object poses as an RGB video
-    visualize(obj_mesh, obj_poses, person1_smplx_data, person2_smplx_data, save_path=save_path, sampling_rate=1, device=device)
+    visualize(obj_mesh, obj_poses, person1_smplx_data, person2_smplx_data, human_mesh_faces=human_mesh_faces, save_path=save_path, sampling_rate=1, device=device)
 
 
 def get_args():
@@ -99,6 +104,7 @@ def get_args():
     ###################################################################
     parser.add_argument('--dataset_root', type=str, default="/share/datasets/hhodataset/CORE4D_release/CORE4D_Real")
     parser.add_argument('--object_model_root', type=str, default="/share/datasets/hhodataset/CORE4D_release/CORE4D_Real/object_models")
+    parser.add_argument('--smplx_model_dir', type=str, default="/share/human_model/models")
     parser.add_argument('--sequence_name', type=str, default="20231002/004")
     parser.add_argument('--save_path', type=str, default="./example.gif")
     parser.add_argument('--device', type=str, default="cuda:0")
