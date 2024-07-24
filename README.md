@@ -91,11 +91,11 @@ This work is licensed under a [CC BY 4.0 license](https://creativecommons.org/li
 
 ## Email
 
-If you have any questions, please feel free to contact ``yun-liu22@mails.tsinghua.edu.cn``.
+If you have any questions, please feel free to contact ``zcwoctopus@gmail.com`` or ``yun-liu22@mails.tsinghua.edu.cn``.
 
 ## Citation
 
-If you fine our work helpful, please cite:
+If you find our work helpful, please cite:
 
 ```x
 @article{zhang2024core4d,
