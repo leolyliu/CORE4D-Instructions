@@ -3,26 +3,20 @@ from os.path import join, isfile
 import sys
 sys.path.append("..")
 import numpy as np
-
-
-# def get_obj_name_correspondance():
-#     corr = {
-#         "chair": "椅子",
-#         "desk": "桌子",
-#         "box": "箱子",
-#         "board": "板子",
-#         "bucket": "bucket",
-#         "stick": "stick",
-#         "Desk": "桌子",
-#         "Box" :"箱子",
-#         "Board": "板子",
-#         "Broad" : "板子",
-#         "Bucket": "bucket",
-#     }
-#     return corr
+import json
 
 
 def get_obj_info(data_dir, obj_dataset_dir):
+    obj_metadata_path = join(data_dir, "object_metadata.json")
+    assert isfile(obj_metadata_path)
+    obj_metadata = json.load(open(obj_metadata_path, "r"))
+    obj_name = obj_metadata["obj_name"].lower()
+    obj_category = obj_name[:-3]
+    obj_model_path = join(obj_dataset_dir, obj_category, obj_name + "_m.obj")
+    return obj_name, obj_model_path
+
+
+def get_obj_info_from_VTS(data_dir, obj_dataset_dir):
     VTS_path = join(data_dir, "VTS_data.npz")
     assert isfile(VTS_path), "VTS_data.npz not found in {}".format(data_dir)
     VTS_data = np.load(join(data_dir, "VTS_data.npz"), allow_pickle=True)["data"].item()

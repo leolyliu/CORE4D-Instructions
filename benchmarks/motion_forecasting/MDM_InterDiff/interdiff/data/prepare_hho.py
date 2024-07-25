@@ -13,14 +13,11 @@ import torch
 from scipy.spatial.transform import Rotation
 from tqdm import tqdm
 import json
-sys.path.insert(0, join(dirname(abspath(__file__)), "../../../.."))  # HHO-dataset
-from motion_forecasting.InterDiff.interdiff.data.prepare_behave import ContactLabelGenerator
-sys.path.insert(0, join(dirname(abspath(__file__)), "../../../.."))  # HHO-dataset
+sys.path.insert(0, join(dirname(abspath(__file__)), "../../../.."))  # benchmarks
+from motion_forecasting.MDM_InterDiff.interdiff.data.prepare_behave import ContactLabelGenerator
+sys.path.insert(0, join(dirname(abspath(__file__)), "../../../.."))  # benchmarks
 from data_processing.utils.VTS_object import get_obj_info
-from data_processing.utils.load_smplx_params import load_multiperson_smplx_params, create_SMPLX_model
-from data_processing.utils.mesh import save_mesh
-from dataset_statistics.train_test_split import TRAIN_OBJECTS, TEST_OBJECTS, load_train_test_split
-from data_processing.smplx.smplx.lbs import batch_rodrigues
+from data_processing.utils.load_smplx_params import load_multiperson_smplx_params
 
 
 def prepare_a_sequence(seq_data, num_samples):
@@ -32,11 +29,12 @@ def prepare_a_sequence(seq_data, num_samples):
     os.makedirs(save_dir, exist_ok=True)
     
     # obj mesh and downsampled point cloud
-    mesh_obj = Mesh()
-    mesh_obj.load_from_obj(obj_model_path)
-    obj_verts = mesh_obj.v
-    obj_faces = mesh_obj.f
-    obj = trimesh.Trimesh(obj_verts, obj_faces, process=False)
+    # mesh_obj = Mesh()
+    # mesh_obj.load_from_obj(obj_model_path)
+    # obj_verts = mesh_obj.v
+    # obj_faces = mesh_obj.f
+    # obj = trimesh.Trimesh(obj_verts, obj_faces, process=False)
+    obj = trimesh.load(obj_model_path)
     object_points, ids = obj.sample(num_samples, return_index=True)
     object_normals = obj.face_normals[ids]
     object_all = np.concatenate([object_points, object_normals], axis=1)
@@ -68,9 +66,9 @@ def prepare_a_sequence(seq_data, num_samples):
         person2_joints = human_params["person2"]["joints"][i]
         foot_contact_label_person1 = 10 if person1_joints[10, 1] < person1_joints[11, 1] else 11
         foot_contact_label_person2 = 10 if person2_joints[10, 1] < person2_joints[11, 1] else 11
-        obj_v = object_points.copy()  # canonical space下的坐标
+        obj_v = object_points.copy()  # points in the object canonical space
         obj_pose = obj_poses[i]
-        obj_v = (obj_v @ obj_pose[:3, :3].T) + obj_pose[:3, 3]  # 世界系下的坐标
+        obj_v = (obj_v @ obj_pose[:3, :3].T) + obj_pose[:3, 3]  # points in the world space
         contact_object_to_person1, contact_person1_to_object = generator.get_contact_labels(person1_mesh, obj_v)
         contact_object_to_person2, contact_person2_to_object = generator.get_contact_labels(person2_mesh, obj_v)
         
@@ -85,7 +83,7 @@ def prepare_a_sequence(seq_data, num_samples):
     np.savez(join(save_dir, "data.npz"), data=data)
 
 
-def main(dataset_root, obj_dataset_dir, save_root, clip_names, num_samples, device):
+def main(dataset_root, obj_dataset_dir, save_root, smplx_model_dir, clip_names, num_samples, device):
     for clip_name in clip_names:
         clip_dir = join(dataset_root, clip_name)
         for seq_name in os.listdir(clip_dir):
@@ -94,9 +92,9 @@ def main(dataset_root, obj_dataset_dir, save_root, clip_names, num_samples, devi
                 continue
             print("processing {} ...".format(seq_dir))
             
-            Opose_fp = join(seq_dir, "aligned_objposes.npy")
-            HHpose_dir = join(seq_dir, "SMPLX_fitting")
-            if (not isfile(Opose_fp)) or (not isdir(HHpose_dir)):
+            Opose_fp = join(seq_dir, "smooth_objposes.npy")
+            HHpose_dir = seq_dir
+            if (not isfile(Opose_fp)) or (not isfile(join(HHpose_dir, "person1_poses.npz"))) or (not isfile(join(HHpose_dir, "person2_poses.npz"))):
                 print("[error] object_pose or human_pose does not exist !!!")
                 continue
             
@@ -107,11 +105,7 @@ def main(dataset_root, obj_dataset_dir, save_root, clip_names, num_samples, devi
             
             obj_poses = np.load(Opose_fp)  # 世界系objpose, shape = (N_frame, 4, 4)
             N_frame = obj_poses.shape[0]
-            try:
-                human_params = load_multiperson_smplx_params(HHpose_dir, start_frame=0, end_frame=N_frame, device=device)
-            except:
-                print("[error] error in load_multiperson_smplx_params for {}".format(seq_dir))
-                continue
+            human_params = load_multiperson_smplx_params(HHpose_dir, smplx_model_dir, start_frame=0, end_frame=N_frame, device=device)
             seq_data = {
                 "N_frame": N_frame,  # int
                 "obj_model_path": obj_model_path,  # obj file
@@ -126,6 +120,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--clip_name', type=str, default="all")  # e.g.: 20231018.20231020
     parser.add_argument('--num_samples', type=int, default="2048")  # downsampled object point number
+    parser.add_argument('--smplx_model_dir', type=str, default="/share/human_model/models")
     args = parser.parse_args()
     return args
 
@@ -133,7 +128,7 @@ def parse_args():
 if __name__ == "__main__":
     #####################################################################
     dataset_root = "/share/datasets/hhodataset/CORE4D_release/CORE4D_Real/human_object_motions"
-    obj_dataset_dir = "/share/datasets/hhodataset/CORE4D_release/CORE4D_Real/object_models/board"
+    obj_dataset_dir = "/share/datasets/hhodataset/CORE4D_release/CORE4D_Real/object_models"
     save_root = "/share/datasets/hhodataset/prepared_motion_forecasting_data"
     device = "cuda:0"
     
@@ -142,6 +137,7 @@ if __name__ == "__main__":
         clip_names = ["20231002", "20231003_1", "20231003_2", "20231008", "20231011", "20231018", "20231020", "20231023", "20231030", "20231108"]
     else:
         clip_names = args.clip_name.split(".")
+    smplx_model_dir = args.smplx_model_dir
     #####################################################################
 
-    main(dataset_root, obj_dataset_dir, save_root, clip_names, args.num_samples, device)
+    main(dataset_root, obj_dataset_dir, save_root, smplx_model_dir, clip_names, args.num_samples, device)
