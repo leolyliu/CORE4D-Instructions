@@ -71,14 +71,14 @@ class Dataset(Dataset):
                 self.seq_dirs.append(seq_dir)
         self.seq_dirs.sort()
         
-        # TODO: here is rescaling
-        if mode == "train":
-            N = len(self.seq_dirs)
-            ids = np.random.choice(np.arange(0, N), 700)
-            self.seq_dirs_copy = self.seq_dirs.copy()
-            self.seq_dirs = []
-            for x in ids:
-                self.seq_dirs.append(self.seq_dirs_copy[x])
+        # # rescaling
+        # if mode == "train":
+        #     N = len(self.seq_dirs)
+        #     ids = np.random.choice(np.arange(0, N), 700)
+        #     self.seq_dirs_copy = self.seq_dirs.copy()
+        #     self.seq_dirs = []
+        #     for x in ids:
+        #         self.seq_dirs.append(self.seq_dirs_copy[x])
         
         print("###### Number of sequences in total =", len(self.seq_dirs))
         
