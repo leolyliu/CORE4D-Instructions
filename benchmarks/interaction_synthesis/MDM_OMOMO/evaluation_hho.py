@@ -134,7 +134,7 @@ def evaluate(seq_data_paths):
 
 
 if __name__ == "__main__":
-    results_dir = "/cephfs_yili/backup/liuyun_localdata_10.210.5.10/HHO-dataset/omomo_runs/stage2_exp_out/prediction_results_3"
+    results_dir = "/cephfs_yili/backup/liuyun_localdata_10.210.5.10/HHO-dataset/omomo_runs/stage2_exp_out/prediction_results"
     seq_data_paths = []
     for fn in os.listdir(results_dir):
         if not fn.endswith(".pkl"):

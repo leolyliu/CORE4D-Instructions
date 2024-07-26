@@ -148,8 +148,8 @@ class HHODataset(Dataset):
     def __init__(
         self,
         train,
-        data_root_folder="/data2/datasets/hhodataset/prepared_motion_forecasting_data",
-        human_model_folder="/data2/datasets/OMOMO_data/smpl_all_models",
+        data_root_folder="/share/datasets/hhodataset/prepared_motion_forecasting_data",
+        human_model_folder="/share/human_model/models",
         window=120,
         use_object_splits=False,
     ):
@@ -165,8 +165,6 @@ class HHODataset(Dataset):
 
         self.use_object_splits = use_object_splits
         
-        # self.train_dates = ["20231002", "20231003_1", "20231003_2", "20231011", "20231020", "20231023", "20231108"]
-        # self.test_dates = ["20231008", "20231018", "20231030"]
         self.train_sequence_names, self.test_sequence_names_seen_obj, self.test_sequence_names_unseen_obj = load_train_test_split()
 
         self.parents = get_smpl_parents()  # 22
@@ -388,43 +386,6 @@ class HHODataset(Dataset):
         self.bps_torch = bps_torch()
 
         self.obj_bps = self.bps['obj']
-
-    # def get_bps_from_window_data_dict(self):
-    #     # Given window_data_dict which contains canonizalized information, compute its corresponding BPS representation. 
-    #     for k in self.window_data_dict:
-    #         window_data = self.window_data_dict[k]
-
-    #         seq_name = window_data['seq_name']
-    #         object_name = seq_name.split("_")[1]
-
-    #         curr_obj_scale = window_data['obj_scale']
-    #         new_obj_x = window_data['obj_trans']
-    #         new_obj_rot_mat = window_data['obj_rot_mat']
-
-    #         # Get object geometry 
-    #         if object_name in ["mop", "vacuum"]:
-    #             curr_obj_bottom_scale = window_data['obj_bottom_scale']
-    #             new_obj_bottom_x = window_data['obj_bottom_trans']
-    #             new_obj_bottom_rot_mat = window_data['obj_bottom_rot_mat']
-
-    #             obj_verts, tmp_obj_faces = self.load_object_geometry(object_name, curr_obj_scale, \
-    #                     new_obj_x, new_obj_rot_mat, \
-    #                     curr_obj_bottom_scale, new_obj_bottom_x, \
-    #                     new_obj_bottom_rot_mat) # T X Nv X 3, tensor
-
-    #         else:
-    #             obj_verts, tmp_obj_faces = self.load_object_geometry(object_name, curr_obj_scale, \
-    #                         new_obj_x, new_obj_rot_mat) # T X Nv X 3, tensor
-
-    #         center_verts = obj_verts.mean(dim=1) # T X 3
-    #         dest_obj_bps_npy_path = os.path.join(self.dest_obj_bps_npy_folder, seq_name+"_"+str(k)+".npy")
-
-    #         if not os.path.exists(dest_obj_bps_npy_path):
-    #             object_bps = self.compute_object_geo_bps(obj_verts, center_verts)
-    #             np.save(dest_obj_bps_npy_path, object_bps.data.cpu().numpy())
-
-    #     import pdb 
-    #     pdb.set_trace() 
 
     def cal_normalize_data_input(self):
         

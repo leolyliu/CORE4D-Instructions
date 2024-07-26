@@ -31,14 +31,14 @@ These will generate ```data.npz``` for each motion sequence.
 
 ```x
 cd interdiff
-python train_diffusion_hho.py --seed <random_seed>
+python train_diffusion_hho.py --seed <random_seed> --dataset_root <dataset_root> --smplx_model_dir <SMPL-X model directory> --results_folder <where to save checkpoints> --test_set <selected test set>
 ```
 
 #### Inference and Evaluation on CORE4D
 
 ```x
 cd interdiff
-python eval_hho_short.py --resume_checkpoint <checkpoint_path> --resume_checkpoint_obj "" --mode no_correction
+python eval_hho_short.py --resume_checkpoint <checkpoint_path> --resume_checkpoint_obj "" --mode no_correction --dataset_root <dataset_root> --smplx_model_dir <SMPL-X model directory> --results_folder <where to save visualizations> --test_set <selected test set>
 ```
 
 ### [2] InterDiff
@@ -47,17 +47,17 @@ python eval_hho_short.py --resume_checkpoint <checkpoint_path> --resume_checkpoi
 
 ```x
 cd interdiff
-python train_diffusion_hho.py --seed <random_seed>
+python train_diffusion_hho.py --seed <random_seed> --dataset_root <dataset_root> --smplx_model_dir <SMPL-X model directory> --results_folder <where to save checkpoints> --test_set <selected test set>
 
 cd interdiff
-python train_correction_hho.py --seed <random_seed>
+python train_correction_hho.py --seed <random_seed> --dataset_root <dataset_root> --smplx_model_dir <SMPL-X model directory> --results_folder <where to save checkpoints> --test_set <selected test set>
 ```
 
 #### Inference and Evaluation on CORE4D
 
 ```x
 cd interdiff
-python eval_hho_short.py --resume_checkpoint <diffusion_checkpoint_path> --resume_checkpoint_obj <correction_checkpoint_path>
+python eval_hho_short.py --resume_checkpoint <diffusion_checkpoint_path> --resume_checkpoint_obj <correction_checkpoint_path> --dataset_root <dataset_root> --smplx_model_dir <SMPL-X model directory> --results_folder <where to save visualizations> --test_set <selected test set>
 ```
 
 ## License

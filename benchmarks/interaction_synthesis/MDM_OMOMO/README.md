@@ -1,4 +1,4 @@
-The code is developed based on [Object Motion Guided Human Motion Synthesis](https://github.com/lijiaman/omomo_release)
+The code is developed based on [Object Motion Guided Human Motion Synthesis](https://github.com/lijiaman/omomo_release), and is tested on Ubuntu 20.04 with NVIDIA Geforce RTX 3090.
 
 ## Environment Setup
 

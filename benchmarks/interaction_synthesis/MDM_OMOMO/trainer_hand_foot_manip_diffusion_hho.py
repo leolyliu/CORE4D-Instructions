@@ -62,7 +62,8 @@ class Trainer(object):
         step_start_ema=2000,
         ema_update_every=10,
         save_and_sample_every=1000,
-        results_folder='./results',
+        obj_model_root="/share/datasets/hhodataset/CORE4D_release/CORE4D_Real/object_models",
+        results_folder="./results",
         use_wandb=True,
     ):
         super().__init__()
@@ -102,7 +103,7 @@ class Trainer(object):
 
         self.data_root_folder = self.opt.data_root_folder 
 
-        self.object_mesh_dict = load_hho_object_meshes()
+        self.object_mesh_dict = load_hho_object_meshes(obj_model_root=obj_model_root)
         self.prep_dataloader(window_size=opt.window)
 
         self.bm_dict = self.ds.bm_dict 
