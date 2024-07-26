@@ -135,7 +135,6 @@ class Trainer(object):
         step_start_ema=2000,
         ema_update_every=10,
         save_and_sample_every=1000,
-        obj_model_root="/share/datasets/hhodataset/CORE4D_release/CORE4D_Real/object_models",
         results_folder="./results",
         use_wandb=True   
     ):
@@ -170,13 +169,14 @@ class Trainer(object):
 
         self.opt = opt 
 
-        # self.data_root_folder = self.opt.data_root_folder 
+        self.data_root_folder = self.opt.data_root_folder
+        self.human_model_folder = self.opt.smplx_model_dir
 
         self.window = opt.window
 
         self.use_object_split = self.opt.use_object_split
         
-        self.object_mesh_dict = load_hho_object_meshes(obj_model_root=obj_model_root)
+        self.object_mesh_dict = load_hho_object_meshes(obj_model_root=self.opt.obj_model_root)
         self.prep_dataloader(window_size=opt.window)
 
         self.bm_dict = self.ds.bm_dict 
@@ -189,8 +189,8 @@ class Trainer(object):
 
     def prep_dataloader(self, window_size):
         # Define dataset
-        train_dataset = HHODataset(train=True, window=window_size, use_object_splits=self.use_object_split)
-        val_dataset = HHODataset(train=False, window=window_size, use_object_splits=self.use_object_split)
+        train_dataset = HHODataset(train=True, data_root_folder=self.data_root_folder, human_model_folder=self.human_model_folder, window=window_size, use_object_splits=self.use_object_split)
+        val_dataset = HHODataset(train=False, data_root_folder=self.data_root_folder, human_model_folder=self.human_model_folder, window=window_size, use_object_splits=self.use_object_split)
 
         self.ds = train_dataset 
         self.val_ds = val_dataset
@@ -793,7 +793,10 @@ def parse_opt():
 
     parser.add_argument("--use_object_split", action="store_true")
 
-    parser.add_argument('--data_root_folder', default='data', help='root folder for dataset')
+    # paths
+    parser.add_argument("--data_root_folder", default="/share/datasets/hhodataset/prepared_motion_forecasting_data")
+    parser.add_argument("--obj_model_root", default="/share/datasets/hhodataset/CORE4D_release/CORE4D_Real/object_models")
+    parser.add_argument("--smplx_model_dir", default="/share/human_model/models")
 
     opt = parser.parse_args()
     return opt

@@ -62,7 +62,6 @@ class Trainer(object):
         step_start_ema=2000,
         ema_update_every=10,
         save_and_sample_every=1000,
-        obj_model_root="/share/datasets/hhodataset/CORE4D_release/CORE4D_Real/object_models",
         results_folder="./results",
         use_wandb=True,
     ):
@@ -101,9 +100,10 @@ class Trainer(object):
 
         self.use_object_split = self.opt.use_object_split 
 
-        self.data_root_folder = self.opt.data_root_folder 
+        self.data_root_folder = self.opt.data_root_folder
+        self.human_model_folder = self.opt.smplx_model_dir
 
-        self.object_mesh_dict = load_hho_object_meshes(obj_model_root=obj_model_root)
+        self.object_mesh_dict = load_hho_object_meshes(obj_model_root=self.opt.obj_model_root)
         self.prep_dataloader(window_size=opt.window)
 
         self.bm_dict = self.ds.bm_dict 
@@ -118,8 +118,8 @@ class Trainer(object):
 
     def prep_dataloader(self, window_size):
         # Define dataset
-        train_dataset = HHODataset(train=True, window=window_size, use_object_splits=self.use_object_split)
-        val_dataset = HHODataset(train=False, window=window_size, use_object_splits=self.use_object_split)
+        train_dataset = HHODataset(train=True, data_root_folder=self.data_root_folder, human_model_folder=self.human_model_folder, window=window_size, use_object_splits=self.use_object_split)
+        val_dataset = HHODataset(train=False, data_root_folder=self.data_root_folder, human_model_folder=self.human_model_folder, window=window_size, use_object_splits=self.use_object_split)
 
         self.ds = train_dataset 
         self.val_ds = val_dataset
@@ -740,213 +740,12 @@ class Trainer(object):
                             "actual_len_list": actual_len_list,
                         }
                         pickle.dump(results, open(motion_save_path, "wb"))
-                        
-                        continue  # TODO remove this
-                    
-                        lhand_jpe, rhand_jpe, hand_jpe, mpvpe, mpjpe, rot_dist, trans_err, gt_contact_dist, contact_dist, \
-                                gt_foot_sliding_jnts, foot_sliding_jnts, contact_precision, contact_recall, \
-                                contact_acc, contact_f1_score = \
-                                compute_metrics(gt_human_verts_list, pred_human_verts_list, gt_human_jnts_list, pred_human_jnts_list, human_faces_list, \
-                                gt_human_trans_list, pred_human_trans_list, gt_human_rot_list, pred_human_rot_list, \
-                                obj_verts_list, obj_faces_list, actual_len_list, use_joints24=True)
-
-                        hand_jpe_per_seq.append(hand_jpe)
-                        lhand_jpe_per_seq.append(lhand_jpe)
-                        rhand_jpe_per_seq.append(rhand_jpe) 
-
-                        mpvpe_per_seq.append(mpvpe)
-                        mpjpe_per_seq.append(mpjpe)
-                        
-                        rot_dist_per_seq.append(rot_dist)
-                        trans_err_per_seq.append(trans_err) 
-                        
-                        gt_foot_sliding_jnts_per_seq.append(gt_foot_sliding_jnts)
-                        foot_sliding_jnts_per_seq.append(foot_sliding_jnts)
-                        
-                        contact_precision_per_seq.append(contact_precision)
-                        contact_recall_per_seq.append(contact_recall) 
-
-                        contact_acc_per_seq.append(contact_acc) 
-                        contact_f1_score_per_seq.append(contact_f1_score)
-
-                        gt_contact_dist_per_seq.append(gt_contact_dist)
-                        contact_dist_per_seq.append(contact_dist)
-
-                        # print("*****************************************Single Sequence*****************************************")
-                        # print("Left Hand JPE: {0}, Right Hand JPE: {1}, Two Hands JPE: {2}".format(lhand_jpe, rhand_jpe, hand_jpe))
-                        # print("MPJPE: {0}, MPVPE: {1}, Root Trans: {2}, Global Rot Err: {3}".format(mpjpe, mpvpe, trans_err, rot_dist))
-                        # print("Foot sliding verts: {0}, Foot sliding jnts: {1}".format(foot_sliding_verts, foot_sliding_jnts))
-                        # print("Collision percent: {0}, Collision depth: {1}".format(collision_percent, mean_collide_depth))
-    
-                        # fullbody_trainer.gen_vis_res(curr_seq_res_list, val_data_dict, \
-                        #     milestone, vis_tag=vis_tag, selected_seq_idx=seq_idx)
-                        # fullbody_trainer.gen_vis_res(val_data_dict['motion'].cuda()[seq_idx:seq_idx+1], val_data_dict, \
-                        #     milestone, vis_gt=True, vis_tag=vis_tag, selected_seq_idx=seq_idx)
-
-                        # break 
         
                 if self.for_quant_eval:
-                    assert False  # TODO: remove this
-                    s1_lhand_jpe_per_seq = np.asarray(s1_lhand_jpe_per_seq).reshape(num_samples_per_seq, num_seq)
-                    s1_rhand_jpe_per_seq = np.asarray(s1_rhand_jpe_per_seq).reshape(num_samples_per_seq, num_seq)
-                    s1_hand_jpe_per_seq = np.asarray(s1_hand_jpe_per_seq).reshape(num_samples_per_seq, num_seq)
-
-                    hand_jpe_per_seq = np.asarray(hand_jpe_per_seq).reshape(num_samples_per_seq, num_seq)
-                    lhand_jpe_per_seq = np.asarray(lhand_jpe_per_seq).reshape(num_samples_per_seq, num_seq)
-                    rhand_jpe_per_seq = np.asarray(rhand_jpe_per_seq).reshape(num_samples_per_seq, num_seq) 
-
-                    mpvpe_per_seq = np.asarray(mpvpe_per_seq).reshape(num_samples_per_seq, num_seq) 
-                    mpjpe_per_seq = np.asarray(mpjpe_per_seq).reshape(num_samples_per_seq, num_seq) # Sample_num X BS 
-                    
-                    rot_dist_per_seq = np.asarray(rot_dist_per_seq).reshape(num_samples_per_seq, num_seq)
-                    trans_err_per_seq = np.asarray(trans_err_per_seq).reshape(num_samples_per_seq, num_seq) 
-                    
-                    gt_foot_sliding_jnts_per_seq = np.asarray(gt_foot_sliding_jnts_per_seq).reshape(num_samples_per_seq, num_seq)
-                    foot_sliding_jnts_per_seq = np.asarray(foot_sliding_jnts_per_seq).reshape(num_samples_per_seq, num_seq) 
-                    
-                    contact_precision_per_seq = np.asarray(contact_precision_per_seq).reshape(num_samples_per_seq, num_seq) 
-                    contact_recall_per_seq = np.asarray(contact_recall_per_seq).reshape(num_samples_per_seq, num_seq) 
-
-                    contact_acc_per_seq = np.asarray(contact_acc_per_seq).reshape(num_samples_per_seq, num_seq) 
-                    contact_f1_score_per_seq = np.asarray(contact_f1_score_per_seq).reshape(num_samples_per_seq, num_seq) 
-
-                    gt_contact_dist_per_seq = np.asarray(gt_contact_dist_per_seq).reshape(num_samples_per_seq, num_seq)
-                    contact_dist_per_seq = np.asarray(contact_dist_per_seq).reshape(num_samples_per_seq, num_seq) 
-
-                    best_sample_idx = mpjpe_per_seq.argmin(axis=0) # sample_num 
-
-                    s1_hand_jpe = s1_hand_jpe_per_seq[best_sample_idx, list(range(num_seq))]
-                    s1_lhand_jpe = s1_lhand_jpe_per_seq[best_sample_idx, list(range(num_seq))]
-                    s1_rhand_jpe = s1_rhand_jpe_per_seq[best_sample_idx, list(range(num_seq))]
-
-                    hand_jpe = hand_jpe_per_seq[best_sample_idx, list(range(num_seq))] # BS 
-                    lhand_jpe = lhand_jpe_per_seq[best_sample_idx, list(range(num_seq))]
-                    rhand_jpe = rhand_jpe_per_seq[best_sample_idx, list(range(num_seq))]
-                    
-                    mpvpe = mpvpe_per_seq[best_sample_idx, list(range(num_seq))]
-                    mpjpe = mpjpe_per_seq[best_sample_idx, list(range(num_seq))]
-                    
-                    rot_dist = rot_dist_per_seq[best_sample_idx, list(range(num_seq))]
-                    trans_err = trans_err_per_seq[best_sample_idx, list(range(num_seq))]
-                   
-                    gt_foot_sliding_jnts = gt_foot_sliding_jnts_per_seq[best_sample_idx, list(range(num_seq))]
-                    foot_sliding_jnts = foot_sliding_jnts_per_seq[best_sample_idx, list(range(num_seq))]
-
-                    contact_precision_seq = contact_precision_per_seq[best_sample_idx, list(range(num_seq))]
-                    contact_recall_seq = contact_recall_per_seq[best_sample_idx, list(range(num_seq))] 
-                    contact_acc_seq = contact_acc_per_seq[best_sample_idx, list(range(num_seq))]
-                    contact_f1_score_seq = contact_f1_score_per_seq[best_sample_idx, list(range(num_seq))]
-
-                    gt_contact_dist_seq = gt_contact_dist_per_seq[best_sample_idx, list(range(num_seq))]
-                    contact_dist_seq = contact_dist_per_seq[best_sample_idx, list(range(num_seq))] 
-
-                    sampled_all_res_per_seq = torch.stack(sampled_all_res_per_seq) # K X BS X T X D 
-                    best_sampled_all_res = sampled_all_res_per_seq[best_sample_idx, list(range(num_seq))] # BS X T X D 
-                    num_seq = best_sampled_all_res.shape[0]
-                    for seq_idx in range(num_seq):
-                        pred_human_trans_list, pred_human_rot_list, pred_human_jnts_list, pred_human_verts_list, human_faces_list, \
-                            obj_verts_list, obj_faces_list, actual_len_list = \
-                            fullbody_trainer.gen_vis_res(best_sampled_all_res[seq_idx:seq_idx+1], val_data_dict, \
-                            0, vis_tag=vis_tag, for_quant_eval=True, selected_seq_idx=seq_idx)
-                        gt_human_trans_list, gt_human_rot_list, gt_human_jnts_list, gt_human_verts_list, human_faces_list, \
-                            obj_verts_list, obj_faces_list, actual_len_list = \
-                            fullbody_trainer.gen_vis_res(val_data_dict['motion'].cuda()[seq_idx:seq_idx+1], val_data_dict, \
-                            0, vis_gt=True, vis_tag=vis_tag, for_quant_eval=True, selected_seq_idx=seq_idx)
-
-                        obj_scale = val_data_dict['obj_scale'][seq_idx]
-                        obj_trans = val_data_dict['obj_trans'][seq_idx]
-                        obj_rot_mat = val_data_dict['obj_rot_mat'][seq_idx]
-                        actual_len = val_data_dict['seq_len'][seq_idx]
-                        object_name = val_data_dict['obj_name'][seq_idx]
-
-                        pred_collision_percent, pred_collision_depth = compute_collision(pred_human_verts_list.cpu(), \
-                            human_faces_list, obj_verts_list.cpu(), obj_faces_list, object_name, \
-                            obj_scale, obj_rot_mat, obj_trans, actual_len)
-                            
-                        gt_collision_percent, gt_collision_depth = compute_collision(gt_human_verts_list.cpu(), \
-                            human_faces_list, obj_verts_list.cpu(), obj_faces_list, object_name, \
-                            obj_scale, obj_rot_mat, obj_trans, actual_len)
-
-                        collision_percent_list.append(pred_collision_percent)
-                        collision_depth_list.append(pred_collision_depth)
-                        gt_collision_percent_list.append(gt_collision_percent)
-                        gt_collision_depth_list.append(gt_collision_depth) 
-                        
-                    for tmp_seq_idx in range(num_seq):
-                        s1_global_lhand_jpe_list.append(s1_lhand_jpe[tmp_seq_idx])
-                        s1_global_rhand_jpe_list.append(s1_rhand_jpe[tmp_seq_idx])
-                        s1_global_hand_jpe_list.append(s1_hand_jpe[tmp_seq_idx])
-
-                        global_hand_jpe_list.append(hand_jpe[tmp_seq_idx])
-                        global_lhand_jpe_list.append(lhand_jpe[tmp_seq_idx])
-                        global_rhand_jpe_list.append(rhand_jpe[tmp_seq_idx])
-
-                        mpvpe_list.append(mpvpe[tmp_seq_idx])
-                        mpjpe_list.append(mpjpe[tmp_seq_idx])
-                        
-                        rot_dist_list.append(rot_dist[tmp_seq_idx])
-                        root_trans_err_list.append(trans_err[tmp_seq_idx])
-                        
-                        gt_foot_sliding_jnts_list.append(gt_foot_sliding_jnts[tmp_seq_idx])
-                        foot_sliding_jnts_list.append(foot_sliding_jnts[tmp_seq_idx])
-
-                        contact_precision_list.append(contact_precision_seq[tmp_seq_idx])
-                        contact_recall_list.append(contact_recall_seq[tmp_seq_idx])
-
-                        contact_acc_list.append(contact_acc_seq[tmp_seq_idx])
-                        contact_f1_score_list.append(contact_f1_score_seq[tmp_seq_idx])
-
-                        gt_contact_dist_list.append(gt_contact_dist_seq[tmp_seq_idx])
-                        contact_dist_list.append(contact_dist_seq[tmp_seq_idx])
-
-                # if s_idx > 0:
-                #     break 
+                    raise NotImplementedError
 
         if self.for_quant_eval:
-            assert False  # TODO: remove this
-            s1_mean_hand_jpe = np.asarray(s1_global_hand_jpe_list).mean()
-            s1_mean_lhand_jpe = np.asarray(s1_global_lhand_jpe_list).mean()
-            s1_mean_rhand_jpe = np.asarray(s1_global_rhand_jpe_list).mean() 
-
-            mean_hand_jpe = np.asarray(global_hand_jpe_list).mean() 
-            mean_lhand_jpe = np.asarray(global_lhand_jpe_list).mean()
-            mean_rhand_jpe = np.asarray(global_rhand_jpe_list).mean()
-            
-            mean_mpvpe = np.asarray(mpvpe_list).mean()
-            mean_mpjpe = np.asarray(mpjpe_list).mean() 
-
-            mean_rot_dist = np.asarray(rot_dist_list).mean() 
-            mean_root_trans_err = np.asarray(root_trans_err_list).mean()
-            
-            mean_collision_percent = np.asarray(collision_percent_list).mean()
-            mean_collision_depth = np.asarray(collision_depth_list).mean() 
-
-            gt_mean_collision_percent = np.asarray(gt_collision_percent_list).mean()
-            gt_mean_collision_depth = np.asarray(gt_collision_depth_list).mean() 
-            
-            mean_gt_fsliding_jnts = np.asarray(gt_foot_sliding_jnts_list).mean()
-            mean_fsliding_jnts = np.asarray(foot_sliding_jnts_list).mean() 
-
-            mean_contact_precision = np.asarray(contact_precision_list).mean()
-            mean_contact_recall = np.asarray(contact_recall_list).mean() 
-
-            mean_contact_acc = np.asarray(contact_acc_list).mean()
-            mean_contact_f1_score = np.asarray(contact_f1_score_list).mean() 
-
-            mean_gt_contact_dist = np.asarray(gt_contact_dist_list).mean()
-            mean_contact_dist = np.asarray(contact_dist_list).mean()
-
-            print("*****************************************Quantitative Evaluation*****************************************")
-            print("The number of sequences: {0}".format(len(mpjpe_list)))
-            print("Stage 1 Left Hand JPE: {0}, Stage 1 Right Hand JPE: {1}, Stage 1 Two Hands JPE: {2}".format(s1_mean_lhand_jpe, s1_mean_rhand_jpe, s1_mean_hand_jpe))
-            print("Left Hand JPE: {0}, Right Hand JPE: {1}, Two Hands JPE: {2}".format(mean_lhand_jpe, mean_rhand_jpe, mean_hand_jpe))
-            print("MPJPE: {0}, MPVPE: {1}, Root Trans: {2}, Global Rot Err: {3}".format(mean_mpjpe, mean_mpvpe, mean_root_trans_err, mean_rot_dist))
-            print("Foot sliding jnts: {0}, GT Foot sliding jnts: {1}".format(mean_fsliding_jnts, mean_gt_fsliding_jnts))
-            print("Collision percent: {0}, Collision depth: {1}".format(mean_collision_percent, mean_collision_depth))
-            print("GT Collision percent: {0}, GT Collision depth: {1}".format(gt_mean_collision_percent, gt_mean_collision_depth))
-            print("Contact precision: {0}, Contact recall: {1}".format(mean_contact_precision, mean_contact_recall))
-            print("Contact Acc: {0}, Contact F1 score: {1}".format(mean_contact_acc, mean_contact_f1_score)) 
-            print("Contact dist: {0}, GT Contact dist: {1}".format(mean_contact_dist, mean_gt_contact_dist))
+            raise NotImplementedError
 
 def run_train(opt, device):
     # Prepare Directories
@@ -1066,7 +865,10 @@ def parse_opt():
 
     parser.add_argument("--use_object_split", action="store_true")
 
-    parser.add_argument('--data_root_folder', default='data', help='root folder for dataset')
+    # paths
+    parser.add_argument("--data_root_folder", default="/share/datasets/hhodataset/prepared_motion_forecasting_data")
+    parser.add_argument("--obj_model_root", default="/share/datasets/hhodataset/CORE4D_release/CORE4D_Real/object_models")
+    parser.add_argument("--smplx_model_dir", default="/share/human_model/models")
 
     opt = parser.parse_args()
     return opt

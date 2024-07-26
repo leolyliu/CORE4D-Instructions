@@ -36,7 +36,13 @@ Install other dependencies.
 pip install -r requirements.txt 
 ```
 
+## Preprocess Data
+
+Before running the baseline algorithms, please first preprocess the data using ```../../motion_forecasting/MDM_InterDiff/interdiff/data/prepare_hho.py```. The code usage is in the "Preprocess Data" section of ```../../motion_forecasting/MDM_InterDiff/README.md```.
+
 ## Baseline Methods
+
+Before running each script, please set the variables in the script. Variables are noted with "<>".
 
 ### [1] MDM
 
