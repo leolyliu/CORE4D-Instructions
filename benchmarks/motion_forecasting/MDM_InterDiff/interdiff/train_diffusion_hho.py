@@ -717,16 +717,24 @@ if __name__ == '__main__':
     # seed
     parser.add_argument("--seed", type=int, default=42)  # 233, 42, 0
     
+    # paths
+    parser.add_argument("--dataset_root", type=str, default="/share/datasets/hhodataset/prepared_motion_forecasting_data", help="Directory of prepared motion forecasting data (each file is named 'data.npz').")
+    parser.add_argument("--smplx_model_dir", type=str, default="/share/human_model/models", help="Directory of SMPL-X models.")
+    parser.add_argument("--results_folder", type=str, default="./results", help="Directory of saved results.")
+    
+    # test set
+    parser.add_argument("--test_set", type=str, default="all", help="Test set ('all' / 'seen' / 'unseen').")
+    
     args = parser.parse_args()
 
     # make demterministic
     pl.seed_everything(args.seed, workers=True)
     torch.autograd.set_detect_anomaly(True)
     # rendering and results
-    results_folder = "./results"
+    results_folder = args.results_folder
     os.makedirs(results_folder, exist_ok=True)
-    train_dataset = Dataset(mode = 'train', past_len=args.past_len, future_len=args.future_len)
-    test_dataset = Dataset(mode = 'test', past_len=args.past_len, future_len=args.future_len)
+    train_dataset = Dataset(mode="train", dataset_root=args.dataset_root, smplx_model_dir=args.smplx_model_dir, past_len=args.past_len, future_len=args.future_len, sample_rate=args.sample_rate, test_set=args.test_set)
+    test_dataset = Dataset(mode="test", dataset_root=args.dataset_root, smplx_model_dir=args.smplx_model_dir, past_len=args.past_len, future_len=args.future_len, sample_rate=args.sample_rate, test_set=args.test_set)
 
     args.smpl_dim = 66 * 2
     args.num_obj_points = train_dataset.num_obj_points

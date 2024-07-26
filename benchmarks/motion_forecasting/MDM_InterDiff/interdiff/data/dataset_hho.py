@@ -20,29 +20,13 @@ MODEL_PATH = "/share/human_model/models"
 
 
 class Dataset(Dataset):
-    def __init__(self, mode='train', past_len=15, future_len=15, sample_rate=1, dataset_root="/data2/datasets/hhodataset/prepared_motion_forecasting_data", test_set=None):
+    def __init__(self, mode='train', past_len=15, future_len=15, sample_rate=1, dataset_root="", smplx_model_dir="", test_set=""):
         # super.__init__(Dataset)
         
-        # TODO: select specific categories
-        # self.obj_categories = ["chair", "desk"]
         self.obj_categories = ["chair", "desk", "board", "box", "bucket", "stick"]
-        # TODO: select whether adding real/retargeted data
+        # select whether adding real/retargeted data
         self.add_real = True
-        self.add_retarget = True
-        
-        # # get sequence dirs
-        # if mode == 'train':
-        #     self.clip_names = ["20231002", "20231003_1", "20231008", "20231018", "20231020", "20231023", "20231108"]
-        # elif mode == 'test':
-        #     self.clip_names = ["20231003_2", "20231011", "20231030"]
-        # else:
-        #     raise Exception('mode must be train or test.')
-        # self.seq_dirs = []
-        # for clip_name in self.clip_names:
-        #     clip_dir = join(dataset_root, clip_name)
-        #     for seq_name in os.listdir(clip_dir):
-        #         if isfile(join(clip_dir, seq_name, "data.npz")):
-        #             self.seq_dirs.append(join(clip_dir, seq_name))
+        self.add_retarget = False
         
         # get sequence dirs
         train_sequence_names, test_sequence_names_seen_obj, test_sequence_names_unseen_obj = load_train_test_split()
@@ -54,7 +38,7 @@ class Dataset(Dataset):
         if mode == 'train':
             sequence_names = train_sequence_names
         elif mode == "test":
-            if test_set is None:
+            if test_set == "all":
                 sequence_names = test_sequence_names_seen_obj + test_sequence_names_unseen_obj
             elif test_set == "seen":
                 sequence_names = test_sequence_names_seen_obj
@@ -88,7 +72,7 @@ class Dataset(Dataset):
         self.past_len = past_len
         self.future_len = future_len
         
-        self.smplx_model = smplx.create(MODEL_PATH, model_type="smplx", gender="neutral", batch_size=1, use_face_contour=False, num_betas=10, num_expression_coeffs=10, ext="npz", use_pca=True, num_pca_comps=12, flat_hand_mean=True)
+        self.smplx_model = smplx.create(smplx_model_dir, model_type="smplx", gender="neutral", batch_size=1, use_face_contour=False, num_betas=10, num_expression_coeffs=10, ext="npz", use_pca=True, num_pca_comps=12, flat_hand_mean=True)
         
         # read data
         self.data = []
@@ -98,14 +82,16 @@ class Dataset(Dataset):
             d = np.load(join(seq_dir, "data.npz"), allow_pickle=True)["data"].item()
             clip_name, seq_name = seq_dir.split("/")[-2:]
             N_frame = d["N_frame"]  # int
-            obj_model_path = d["obj_model_path"].replace("/data3/datasets/HHO_object_dataset_final", "/data2/datasets/HHO_object_dataset_final_simplified")  # str
+            obj_model_path = d["obj_model_path"]  # str
             
-            if (obj_model_path.find("vchair") > -1) or (obj_model_path.find("vtable") > -1):
-                obj_cat = obj_model_path.split("/")[-1][1:6].replace("table", "desk")
+            if (obj_model_path.find("vchair") > -1) or (obj_model_path.find("vtable") > -1):  # for CORE4D_Synthetic objects
+                obj_cat = obj_model_path.split("/")[-2].split("_")[1][1:6].replace("table", "desk")
             else:
-                obj_cat = obj_model_path.split("/")[-3]
+                obj_cat = obj_model_path.split("/")[-2]  # for CORE4D_Real objects
+            
             if not obj_cat in self.obj_categories:
                 continue
+            
             seq_idx += 1
             
             obj_points = d["object_points"]  # shape = (2048, 7)
@@ -164,19 +150,19 @@ class Dataset(Dataset):
                 "clip_name": clip_name,  # str
                 "seq_name": seq_name,  # str
                 "obj_points": obj_points,  # (2048, 7)
-                "contact_object_to_person1": contact_o_to_p1,  # list, len=N_frame, 元素都是list且不定长
-                "contact_object_to_person2": contact_o_to_p2,  # list, len=N_frame, 元素都是list且不定长
-                "contact_person1_to_object": contact_p1_to_o,  # list, len=N_frame, 元素都是list且不定长
-                "contact_person2_to_object": contact_p2_to_o,  # list, len=N_frame, 元素都是list且不定长
+                "contact_object_to_person1": contact_o_to_p1,  # list, len=N_frame, each item is a list
+                "contact_object_to_person2": contact_o_to_p2,  # list, len=N_frame, each item is a list
+                "contact_person1_to_object": contact_p1_to_o,  # list, len=N_frame, each item is a list
+                "contact_person2_to_object": contact_p2_to_o,  # list, len=N_frame, each item is a list
                 "p1_verts": np.float32(p1_verts),  # np, (N_frame, 10475, 3)
                 "p2_verts": np.float32(p2_verts),  # np, (N_frame, 10475, 3)
-                "foot_contact_label_person1": foot_contact_label_p1,  # list, len=N_frame, 元素是10/11
-                "foot_contact_label_person2": foot_contact_label_p2,  # list, len=N_frame, 元素是10/11
+                "foot_contact_label_person1": foot_contact_label_p1,  # list, len=N_frame, each item is 10 or 11
+                "foot_contact_label_person2": foot_contact_label_p2,  # list, len=N_frame, each item is 10 or 11
             }
             self.data.append(records)
             
-            # 切片
-            fragment = (past_len + future_len) * sample_rate # 30
+            # clipping
+            fragment = (past_len + future_len) * sample_rate  # 30
             for i in range(N_frame // fragment):
                 if mode == "test":
                     self.idx2frame.append((seq_idx, i * fragment, 1))
@@ -185,7 +171,7 @@ class Dataset(Dataset):
                 else:
                     self.idx2frame.append((seq_idx, i * fragment, fragment))
             
-            # TODO: for debug
+            # # for debug
             # if k > 30:
             #     break
         

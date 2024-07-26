@@ -39,10 +39,10 @@ def compute_contact_accuracy(obj_points, pred_joints, gt_joints, contact_thresho
     assert pred_joints.shape == (T, B, 127, 3)  # joints from SMPLX forward
     assert gt_joints.shape == (T, B, 127, 3)  # joints from SMPLX forward
     
-    pred_left_wrist = (pred_joints[:, :, 20] + pred_joints[:, :, 28]) / 2  # 近似手掌中心
-    pred_right_wrist = (pred_joints[:, :, 21] + pred_joints[:, :, 43]) / 2  # 近似手掌中心
-    gt_left_wrist = (gt_joints[:, :, 20] + gt_joints[:, :, 28]) / 2  # 近似手掌中心
-    gt_right_wrist = (gt_joints[:, :, 21] + gt_joints[:, :, 43]) / 2  # 近似手掌中心
+    pred_left_wrist = (pred_joints[:, :, 20] + pred_joints[:, :, 28]) / 2  # approximate palm center
+    pred_right_wrist = (pred_joints[:, :, 21] + pred_joints[:, :, 43]) / 2  # approximate palm center
+    gt_left_wrist = (gt_joints[:, :, 20] + gt_joints[:, :, 28]) / 2  # approximate palm center
+    gt_right_wrist = (gt_joints[:, :, 21] + gt_joints[:, :, 43]) / 2  # approximate palm center
     
     pred_left_contact_flag = (((obj_points - pred_left_wrist.reshape(T, B, 1, 3))**2).sum(dim=-1)**0.5).min(dim=-1)[0] < contact_threshould
     pred_right_contact_flag = (((obj_points - pred_right_wrist.reshape(T, B, 1, 3))**2).sum(dim=-1)**0.5).min(dim=-1)[0] < contact_threshould
@@ -115,15 +115,6 @@ def metrics(obj_pred, body1_jtr, body1, body2_jtr, body2, obj_gt, body1_jtr_gt, 
 
     # translation
     obj_translation = (obj_pred[:,:,-3:] - obj_gt[:,:,-3:]).norm(dim=2).mean(dim=0)
-
-    # # quaternion error
-    # # to quat
-    # obj_rot_quat = axis_angle_to_quaternion(obj_pred[:,:,:3])# T,B,4
-    # obj_rot_quat_gt = axis_angle_to_quaternion(obj_gt[:,:,:3])# T,B,4
-    # rotation_error_v1 = (obj_rot_quat - obj_rot_quat_gt).norm(dim=2,p=1)
-    # rotation_error_v2 = (obj_rot_quat + obj_rot_quat_gt).norm(dim=2,p=1)
-    # rotation_min = torch.stack([rotation_error_v1, rotation_error_v2], dim=0).min(dim=0)[0]
-    # rotation_error = rotation_min.mean(dim=0)
     
     # rotation error (unit: degree)
     obj_rot_mat = axis_angle_to_matrix(obj_pred[:,:,:3])  # (T, B, 3, 3)
@@ -236,7 +227,7 @@ def denoised_fn(x, t, model_kwargs):
     return x
 
 
-def sample_once_proj(batch):  # TODO: 物体现在乱飘, debug !!!
+def sample_once_proj(batch):
     with torch.no_grad():
         embedding, gt = model.model._get_embeddings(batch, device)
         T, B, _ = gt.shape
@@ -371,13 +362,6 @@ def get_gt(batch):
 
         smplx_model = smplx.create(MODEL_PATH, model_type="smplx", gender="neutral", batch_size=T*B, use_face_contour=False, num_betas=10, num_expression_coeffs=10, ext="npz", use_pca=True, num_pca_comps=12, flat_hand_mean=True)
         faces = smplx_model.faces_tensor.detach().cpu()
-
-        # betas = torch.stack([record['smplfit_params']['betas'] for record in batch['frames']], dim=0).to(device) 
-        # betas_batch = betas.view(T * B, -1) 
-        # body_gt_batch = body_gt.view(T * B, -1)
-        # verts_gt, jtr_gt, _, _ = smpl(body_gt_batch[:, :-3], 
-        #         th_betas=betas_batch, 
-        #         th_trans=body_gt_batch[:, -3:])
         
         body1_betas=torch.cat([record['person1_params']['betas'] for record in batch['frames']], dim=0)
         body1_betas_batch = body1_betas.view(T * B, -1)
@@ -476,7 +460,7 @@ def sample(name):
                 p1_hand_mpjpe = torch.stack([p1_hand_mpjpe, metric['p1_hand_mpjpe']])
                 p2_hand_mpjpe = torch.stack([p2_hand_mpjpe, metric['p2_hand_mpjpe']])
 
-                obj, body1, verts1, jtrs1, pelvis1, body2, verts2, jtrs2, pelvis2 = smooth(obj, body1, verts1, jtrs1, pelvis1, body2, verts2, jtrs2, pelvis2)
+                # obj, body1, verts1, jtrs1, pelvis1, body2, verts2, jtrs2, pelvis2 = smooth(obj, body1, verts1, jtrs1, pelvis1, body2, verts2, jtrs2, pelvis2)
                 if i % args.render_epoch == 0:
                     visualize(batch, i, obj[:, 0], verts1[:, 0], verts2[:, 0], faces, name, gt=False)
                     visualize(batch, i, obj_gt[:, 0], verts1_gt[:, 0], verts2_gt[:, 0], faces, name, gt=True)
@@ -495,7 +479,7 @@ def sample(name):
             metric_dict['penetrate_o2p2'] += penetrate_o2p2.min(dim=0)[0].mean().item()
             metric_dict['p1_hand_mpjpe'] += p1_hand_mpjpe.min(dim=0)[0].mean().item()
             metric_dict['p2_hand_mpjpe'] += p2_hand_mpjpe.min(dim=0)[0].mean().item()
-            print(i+1)
+            print("[evaluated {} batches]".format(i+1))
             print('p1_global_mpjpe', metric_dict['p1_global_mpjpe'] / (i+1))
             print('p1_hand_mpjpe', metric_dict['p1_hand_mpjpe'] / (i+1))
             print('p1_local_mpjpe', metric_dict['p1_local_mpjpe'] / (i+1))
@@ -617,6 +601,14 @@ if __name__ == '__main__':
                             " For classifier-free guidance learning.")
     parser.add_argument("--diverse_samples", type=int, default=1)
     
+    # paths
+    parser.add_argument("--dataset_root", type=str, default="/share/datasets/hhodataset/prepared_motion_forecasting_data", help="Directory of prepared motion forecasting data (each file is named 'data.npz').")
+    parser.add_argument("--smplx_model_dir", type=str, default="/share/human_model/models", help="Directory of SMPL-X models.")
+    parser.add_argument("--results_folder", type=str, default="./results", help="Directory of saved results.")
+    
+    # test set
+    parser.add_argument("--test_set", type=str, default="all", help="Test set ('all' / 'seen' / 'unseen').")
+    
     # test set selection
     parser.add_argument("--set", type=str, default="unseen")
     
@@ -626,9 +618,9 @@ if __name__ == '__main__':
     pl.seed_everything(233, workers=True)
     torch.autograd.set_detect_anomaly(True)
     # rendering and results
-    results_folder = "/localdata/liuyun/HHO-dataset/InterDiff_results"
+    results_folder = args.results_folder
     os.makedirs(results_folder, exist_ok=True)
-    test_dataset = Dataset(mode = 'test', past_len=args.past_len, future_len=args.future_len, test_set=args.set)
+    test_dataset = Dataset(mode="test", dataset_root=args.dataset_root, smplx_model_dir=args.smplx_model_dir, past_len=args.past_len, future_len=args.future_len, sample_rate=args.sample_rate, test_set=args.test_set)
 
     args.smpl_dim = 66 * 2
     args.num_obj_points = test_dataset.num_obj_points
@@ -639,30 +631,13 @@ if __name__ == '__main__':
                             drop_last=True, pin_memory=False)
     print('dataset loaded')
     
-    obj_ckpt_dir = dirname(args.resume_checkpoint_obj)
-    obj_ckpt_filenames = {}
-    for fn in os.listdir(obj_ckpt_dir):
-        if fn.endswith(".ckpt") and (not "last" in fn):
-            obj_ckpt_filenames[int(fn.split("-")[0].split("=")[1])] = fn
-
-    for i in range(9, 1009, 10):
+    model = LitInteraction.load_from_checkpoint(args.resume_checkpoint, args=args).to(device)
+    print("[select an object ckeckpoint] obj_ckpt_path =", args.resume_checkpoint_obj)
+    obj_model = LitObj.load_from_checkpoint(args.resume_checkpoint_obj, args=args).to(device)
         
-        if not i in obj_ckpt_filenames:
-            continue
-        
-        obj_ckpt_path = join(obj_ckpt_dir, obj_ckpt_filenames[i])
-        print("[select an object ckecpoint] obj_ckpt_path =", obj_ckpt_path)
-
-        model = LitInteraction.load_from_checkpoint(args.resume_checkpoint, args=args).to(device)
-        obj_model = LitObj.load_from_checkpoint(obj_ckpt_path, args=args).to(device)
-        
-        model.eval()
-        obj_model.eval()
-        tb_logger = pl_loggers.TensorBoardLogger(str(results_folder + '/sample_hho_' + args.set + "_" + args.mode), name=args.expr_name)
-        save_dir = Path(tb_logger.log_dir)  # for this version
-        print(save_dir)
-        # sample()
-        sample(args.mode)
-        
-        if args.mode == "no_correction":
-            break
+    model.eval()
+    obj_model.eval()
+    tb_logger = pl_loggers.TensorBoardLogger(str(results_folder + '/sample_hho_' + args.set + "_" + args.mode), name=args.expr_name)
+    save_dir = Path(tb_logger.log_dir)  # for this version
+    print(save_dir)
+    sample(args.mode)

@@ -106,6 +106,12 @@ def main(dataset_root, obj_dataset_dir, save_root, smplx_model_dir, clip_names, 
             obj_poses = np.load(Opose_fp)  # 世界系objpose, shape = (N_frame, 4, 4)
             N_frame = obj_poses.shape[0]
             human_params = load_multiperson_smplx_params(HHpose_dir, smplx_model_dir, start_frame=0, end_frame=N_frame, device=device)
+            if human_params["person1"]["betas"].shape[0] != N_frame:
+                print("[error] incorrect frame number of person1 !!!")
+                continue
+            if human_params["person2"]["betas"].shape[0] != N_frame:
+                print("[error] incorrect frame number of person2 !!!")
+                continue
             seq_data = {
                 "N_frame": N_frame,  # int
                 "obj_model_path": obj_model_path,  # obj file
@@ -120,24 +126,20 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--clip_name', type=str, default="all")  # e.g.: 20231018.20231020
     parser.add_argument('--num_samples', type=int, default="2048")  # downsampled object point number
+    parser.add_argument('--dataset_root', type=str, default="/share/datasets/hhodataset/CORE4D_release/CORE4D_Real/human_object_motions")
+    parser.add_argument('--obj_dataset_dir', type=str, default="/share/datasets/hhodataset/CORE4D_release/CORE4D_Real/object_models")
     parser.add_argument('--smplx_model_dir', type=str, default="/share/human_model/models")
+    parser.add_argument('--save_root', type=str, default="/share/datasets/hhodataset/prepared_motion_forecasting_data")
+    parser.add_argument('--device', type=str, default="cuda:0")
     args = parser.parse_args()
     return args
 
 
 if __name__ == "__main__":
-    #####################################################################
-    dataset_root = "/share/datasets/hhodataset/CORE4D_release/CORE4D_Real/human_object_motions"
-    obj_dataset_dir = "/share/datasets/hhodataset/CORE4D_release/CORE4D_Real/object_models"
-    save_root = "/share/datasets/hhodataset/prepared_motion_forecasting_data"
-    device = "cuda:0"
-    
     args = parse_args()
     if args.clip_name == "all":
         clip_names = ["20231002", "20231003_1", "20231003_2", "20231008", "20231011", "20231018", "20231020", "20231023", "20231030", "20231108"]
     else:
         clip_names = args.clip_name.split(".")
-    smplx_model_dir = args.smplx_model_dir
-    #####################################################################
 
-    main(dataset_root, obj_dataset_dir, save_root, smplx_model_dir, clip_names, args.num_samples, device)
+    main(args.dataset_root, args.obj_dataset_dir, args.save_root, args.smplx_model_dir, clip_names, args.num_samples, args.device)
