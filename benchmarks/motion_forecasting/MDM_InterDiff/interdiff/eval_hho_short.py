@@ -632,8 +632,11 @@ if __name__ == '__main__':
     print('dataset loaded')
     
     model = LitInteraction.load_from_checkpoint(args.resume_checkpoint, args=args).to(device)
-    print("[select an object ckeckpoint] obj_ckpt_path =", args.resume_checkpoint_obj)
-    obj_model = LitObj.load_from_checkpoint(args.resume_checkpoint_obj, args=args).to(device)
+    if args.mode != "no_correction":
+        print("[select an object ckeckpoint] obj_ckpt_path =", args.resume_checkpoint_obj)
+        obj_model = LitObj.load_from_checkpoint(args.resume_checkpoint_obj, args=args).to(device)
+    else:
+        obj_model = LitObj(args)
         
     model.eval()
     obj_model.eval()
