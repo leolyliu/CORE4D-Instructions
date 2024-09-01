@@ -8,6 +8,11 @@ Official repository of "CORE4D: A 4D Human-Object-Human Interaction Dataset for 
 
 Chengwen Zhang*, Yun Liu*, Ruofan Xing, Bingda Tang, Li Yi
 
+## Data Update Records
+
+* 2024/8/17: Uploaded V2 of CORE4D-Real, including updated human motions in "CORE4D_Real_human_object_motions_v2"
+* 2024/5/31: Uploaded CORE4D-V1
+
 ## Data Organization
 
 The data is organized as follows:
