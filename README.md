@@ -6,7 +6,11 @@ Official repository of "CORE4D: A 4D Human-Object-Human Interaction Dataset for 
 
 #### Authors
 
-Chengwen Zhang*, Yun Liu*, Ruofan Xing, Bingda Tang, Li Yi
+Yun Liu*, Chengwen Zhang*, Ruofan Xing, Bingda Tang, Bowen Yang, Li Yi
+
+## Plans
+
+* 2025/1/25: We have received several valuable suggestions of the dataset, and is preparing CORE4D-Real V3 and CORE4D-Synthetic V2. We expect to release them in 2025/4.
 
 ## Data Update Records
 
