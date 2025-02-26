@@ -107,9 +107,9 @@ If you have any questions, please feel free to contact ``zcwoctopus@gmail.com`` 
 If you find our work helpful, please cite:
 
 ```x
-@article{zhang2024core4d,
-  title={CORE4D: A 4D Human-Object-Human Interaction Dataset for Collaborative Object REarrangement},
-  author={Zhang, Chengwen and Liu, Yun and Xing, Ruofan and Tang, Bingda and Yi, Li},
+@article{liu2024core4d,
+  title={Core4d: A 4d human-object-human interaction dataset for collaborative object rearrangement},
+  author={Liu, Yun and Zhang, Chengwen and Xing, Ruofan and Tang, Bingda and Yang, Bowen and Yi, Li},
   journal={arXiv preprint arXiv:2406.19353},
   year={2024}
 }
