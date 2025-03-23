@@ -1,4 +1,4 @@
-****# Definitions of CORE4D Data File
+# Definitions of CORE4D Data File
 
 ## Data Organization
 
@@ -86,6 +86,32 @@ The data is organized as follows:
         ...
     ...
 ```
+
+## Action Labels
+
+The action label for each motion sequence is provided in ```CORE4D_Real/action_labels.json```. Definitions of the action annotations are:
+
+Action Annotation|Action Definition
+:---:|:---:
+move1|(Collaborate) Moving the object together, only one person knows the object's target position.
+move2|(Collaborate) Moving the object together, both persons know the object's target position.
+raise,raise1,raise2,raise3|(Collaborate) Raising the object together.
+rot|(Collaborate) Rotating the object by 180 degrees together.
+raise_rot,raise1_rot,raise2_rot,raise3_rot|(Collaborate) Raising the object and rotating it by 180 degrees together.
+pass1|(Handover) Person 1 passes the object to Person 2.
+pass2|(Handover) Person 2 passes the object to Person 1.
+join|(Join) Person 2 joins in the interaction halfway through.
+leave|(Leave) Person 2 leaves the interaction halfway through.
+strike|(Other) One person waves the object in his/her hands, and the other person dodges it.
+notify|(Other) One person sits on the object first, then the other person notifies him/her and moves the object away.
+
+Definitions of the obstacle are:
+
+Obstacle Annotation|Obstacle Definision
+:---:|:---:
+obs0|no obstacle
+obs1|sparse obstacle
+obs3|dense obstacle
 
 ## Object Models
 
