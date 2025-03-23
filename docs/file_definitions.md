@@ -107,7 +107,7 @@ notify|(Other) One person sits on the object first, then the other person notifi
 
 Definitions of the obstacle are:
 
-Obstacle Annotation|Obstacle Definision
+Obstacle Annotation|Obstacle Definition
 :---:|:---:
 obs0|no obstacle
 obs1|sparse obstacle
