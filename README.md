@@ -8,10 +8,6 @@ Official repository of "CORE4D: A 4D Human-Object-Human Interaction Dataset for 
 
 Yun Liu*, Chengwen Zhang*, Ruofan Xing, Bingda Tang, Bowen Yang, Li Yi
 
-## Plans
-
-* 2025/1/25: We have received several valuable suggestions of the dataset, and is preparing CORE4D-Real V3 and CORE4D-Synthetic V2. We expect to release them in 2025/4.
-
 ## Data Update Records
 
 * 2024/8/17: Uploaded V2 of CORE4D-Real, including updated human motions in "CORE4D_Real_human_object_motions_v2"
