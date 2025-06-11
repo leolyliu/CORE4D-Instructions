@@ -103,10 +103,11 @@ If you have any questions, please feel free to contact ``zcwoctopus@gmail.com`` 
 If you find our work helpful, please cite:
 
 ```x
-@article{liu2024core4d,
-  title={Core4d: A 4d human-object-human interaction dataset for collaborative object rearrangement},
+@inproceedings{liu2025core4d,
+  title={CORE4D: A 4D Human-Object-Human Interaction Dataset for Collaborative Object REarrangement},
   author={Liu, Yun and Zhang, Chengwen and Xing, Ruofan and Tang, Bingda and Yang, Bowen and Yi, Li},
-  journal={arXiv preprint arXiv:2406.19353},
-  year={2024}
+  booktitle={Proceedings of the Computer Vision and Pattern Recognition Conference},
+  pages={1769--1782},
+  year={2025}
 }
 ```
